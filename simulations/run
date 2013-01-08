@@ -1,0 +1,4 @@
+#!/bin/sh
+cd `dirname $0`
+../src/udpping -n .:../src $*
+# for shared lib, use: opp_run -l ../src/udpping -n .:../src $*
