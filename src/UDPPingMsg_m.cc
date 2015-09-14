@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.2 from UDPPingMsg.msg.
+// Generated file, do not edit! Created by nedtool 4.6 from UDPPingMsg.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -12,9 +12,8 @@
 #include <sstream>
 #include "UDPPingMsg_m.h"
 
-// Template rule which fires if a struct or class doesn't have operator<<
-template<typename T>
-std::ostream& operator<<(std::ostream& out,const T&) {return out;}
+USING_NAMESPACE
+
 
 // Another default rule (prevents compiler from choosing base class' doPacking())
 template<typename T>
@@ -30,15 +29,39 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+// Template rule for outputting std::vector<T> types
+template<typename T, typename A>
+inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)
+{
+    out.put('{');
+    for(typename std::vector<T,A>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+    {
+        if (it != vec.begin()) {
+            out.put(','); out.put(' ');
+        }
+        out << *it;
+    }
+    out.put('}');
+    
+    char buf[32];
+    sprintf(buf, " (size=%u)", (unsigned int)vec.size());
+    out.write(buf, strlen(buf));
+    return out;
+}
+
+// Template rule which fires if a struct or class doesn't have operator<<
+template<typename T>
+inline std::ostream& operator<<(std::ostream& out,const T&) {return out;}
+
 Register_Class(UDPPingMsg);
 
-UDPPingMsg::UDPPingMsg(const char *name, int kind) : cPacket(name,kind)
+UDPPingMsg::UDPPingMsg(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->counter_var = 0;
     this->isRequest_var = true;
 }
 
-UDPPingMsg::UDPPingMsg(const UDPPingMsg& other) : cPacket(other)
+UDPPingMsg::UDPPingMsg(const UDPPingMsg& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -50,7 +73,7 @@ UDPPingMsg::~UDPPingMsg()
 UDPPingMsg& UDPPingMsg::operator=(const UDPPingMsg& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -63,14 +86,14 @@ void UDPPingMsg::copy(const UDPPingMsg& other)
 
 void UDPPingMsg::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->counter_var);
     doPacking(b,this->isRequest_var);
 }
 
 void UDPPingMsg::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->counter_var);
     doUnpacking(b,this->isRequest_var);
 }
@@ -266,11 +289,9 @@ const char *UDPPingMsgDescriptor::getFieldStructName(void *object, int field) co
             return basedesc->getFieldStructName(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    static const char *fieldStructNames[] = {
-        NULL,
-        NULL,
+    switch (field) {
+        default: return NULL;
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
 void *UDPPingMsgDescriptor::getFieldStructPointer(void *object, int field, int i) const

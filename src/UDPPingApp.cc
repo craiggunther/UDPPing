@@ -1,5 +1,6 @@
 //
-// Copyright (C) 2012 Juan-Carlos Maureira
+// Copyright (C) 2005 Andras Babos
+// Copyright (C) 2014 Juan Carlos Maureira
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
@@ -16,25 +17,30 @@
 //
 
 #include <omnetpp.h>
+
 #include "UDPPingApp.h"
+
 #include "UDPPingMsg_m.h"
 #include "UDPControlInfo_m.h"
-#include "IPAddressResolver.h"
+#include "IPvXAddressResolver.h"
 #include "IInterfaceTable.h"
 #include "InterfaceEntry.h"
+
 #include "IPv4InterfaceData.h"
 
 Define_Module(UDPPingApp);
 
+simsignal_t UDPPingApp::packet_sent_signal = registerSignal("PacketSent");
+
 cModule* UDPPingApp::getDestinationModule() {
 
-    EV << "Searching for destination module" << endl;
+    ev << "Searching for destination module in " << this->getFullPath() << endl;
 
     cTopology* topo = new cTopology("udpPingApp");
     // extract topology
     topo->extractByProperty("node");
 
-    EV << "cTopology found " << topo->getNumNodes() << " nodes\n";
+    ev << "cTopology found " << topo->getNumNodes() << " nodes\n";
 
     cModule* destModule = NULL;
 
@@ -42,21 +48,29 @@ cModule* UDPPingApp::getDestinationModule() {
         if ( topo->getNode(i) == topo->getNodeFor(getParentModule()) ) continue; // skip ourselves
 
         cModule* mod = topo->getNode(i)->getModule();
-        bool is_ip_node = IPAddressResolver().findInterfaceTableOf(mod)!=NULL;
+        bool is_ip_node = IPvXAddressResolver().findInterfaceTableOf(mod)!=NULL;
 
         if (is_ip_node) {
-            IInterfaceTable *ift = IPAddressResolver().interfaceTableOf(mod);
+            IInterfaceTable *ift = IPvXAddressResolver().interfaceTableOf(mod);
             // search the destination ip
             if (ift!=NULL) {
                 for (int k=0; k<ift->getNumInterfaces(); k++) {
                     InterfaceEntry *ie = ift->getInterface(k);
 
-                    for(int j=0;j<this->destAddresses.size();j++) {
+                    for(unsigned int j=0;j<this->destAddresses.size();j++) {
 
-                        if (!ie->isLoopback() & (ie->ipv4Data()->getIPAddress() == this->destAddresses[j].get4()) ) {
+                        if (!ie->isLoopback() & (ie->ipv4Data()!=NULL && ie->ipv4Data()->getIPAddress() == this->destAddresses[j].get4()) ) {
                             // found!!
-                            EV << "Module " << mod << " IP address: " << ie->ipv4Data()->getIPAddress() << endl;
-                            destModule = topo->getNode(i)->getModule();
+
+                            for (cSubModIterator iter(*mod); !iter.end(); iter++)
+                            {
+                              if (iter()->getModuleType() == cModuleType::get("udpping.UDPPingApp")) {
+                                  destModule = iter();
+                                  break;
+                              }
+                            }
+
+                            ev << "Module " << mod << " dest " << destModule <<" IP address: " << ie->ipv4Data()->getIPAddress() << endl;
                             break;
                         }
                     }
@@ -73,23 +87,26 @@ cModule* UDPPingApp::getDestinationModule() {
     }
 
     if (destModule) {
-        EV << "Destination Module : " << destModule->getFullName() << endl;
+        ev << "Destination Module : " << destModule->getFullName() << endl;
     }
 
     return destModule;
 }
 
 
-void UDPPingApp::initialize(int stage)
-{
+void UDPPingApp::initialize(int stage) {
+    UDPBasicApp::initialize(stage);
+
     // because of IPAddressResolver, we need to wait until interfaces are registered,
     // address auto-assignment takes place etc.
+
     if (stage!=3)
         return;
 
     counter = 0;
     numSent = 0;
     numReceived = 0;
+
     WATCH(numSent);
     WATCH(numReceived);
 
@@ -100,12 +117,10 @@ void UDPPingApp::initialize(int stage)
     cStringTokenizer tokenizer(destAddrs);
     const char *token;
     while ((token = tokenizer.nextToken())!=NULL)
-        destAddresses.push_back(IPAddressResolver().resolve(token));
+        destAddresses.push_back(IPvXAddressResolver().resolve(token));
 
     if (destAddresses.empty())
         return;
-
-    bindToPort(localPort);
 
     this->cOutCounter = NULL;
 
@@ -114,37 +129,43 @@ void UDPPingApp::initialize(int stage)
         this->cOutCounter = new cOutVector("Counter Arrival");
     }
 
+    // create the vector to track the rtt of packets
+    this->cOutRTT= new cOutVector("RTT");
+
     // watch the bytes received variable
     bytes_received = 0;
     WATCH(bytes_received);
 
-    // schedule the first packet at "startingTime"
-    cMessage *timer = new cMessage("sendTimer");
-    scheduleAt((double)par("startingTime"), timer);
-
-    // Register the signal to notify possible receivers about the on-the-way packet
-    packet_sent_signal = registerSignal("PacketSent");
 
     // subscribe the on-the-way packet signal
-
     this->destination_module = this->getDestinationModule();
 
     if (this->destination_module!=NULL) {
+        ev << "Subscribing PacketSent signal in " << this->destination_module << endl;
+
         this->destination_module->subscribe("PacketSent",this);
+
     } else {
-        EV << "Could not determine destination module at initialization time, trying later" << endl;
+        ev << "Could not determine destination module at initialization time, trying later" << endl;
     }
 }
 
 void UDPPingApp::finish()
 {
     recordScalar("Bytes Received",this->bytes_received,"Bytes");
+
+    // record a vector with the lost packets
+    cOutVector packet_loss_vector("Packet Loss");
+
+    for(PacketRegisterVector::iterator it=this->prv.begin();it!=this->prv.end();it++) {
+        packet_loss_vector.recordWithTimestamp((*it).second,(*it).first);
+    }
 }
 
 cPacket *UDPPingApp::createPacket()
 {
     char msgName[32];
-    sprintf(msgName,"UDPPing-%d", counter++);
+    sprintf(msgName,"UDPPing-%ld", counter++);
 
     UDPPingMsg *message = new UDPPingMsg(msgName);
     message->setByteLength(par("messageLength").longValue());
@@ -156,11 +177,9 @@ cPacket *UDPPingApp::createPacket()
         if (this->destination_module!=NULL) {
             this->destination_module->subscribe("PacketSent",this);
         } else {
-            EV << "Could not determine destination module at initialization time, trying later" << endl;
+            ev << "Could not determine destination module at initialization time, trying later" << endl;
         }
     }
-
-    emit(this->packet_sent_signal,counter);
 
     return message;
 }
@@ -177,11 +196,13 @@ void UDPPingApp::processPacket(cPacket *msg)
 
     if (packet->getIsRequest())
     {
-        UDPControlInfo *controlInfo = check_and_cast<UDPControlInfo *>(packet->getControlInfo());
+
+        UDPDataIndication *controlInfo = check_and_cast<UDPDataIndication *>(packet->removeControlInfo());
 
         // swap src and dest
         IPvXAddress srcAddr = controlInfo->getSrcAddr();
         int srcPort = controlInfo->getSrcPort();
+
         controlInfo->setSrcAddr(controlInfo->getDestAddr());
         controlInfo->setSrcPort(controlInfo->getDestPort());
         controlInfo->setDestAddr(srcAddr);
@@ -195,28 +216,50 @@ void UDPPingApp::processPacket(cPacket *msg)
         // register the amount of bytes received
         this->bytes_received += packet->getByteLength();
 
-        if (this->prv.find(packet->getCounter())) {
+        if (this->prv.find(packet->getCounter())!=this->prv.end()) {
+            this->prv.erase(packet->getCounter());
+        }
 
         packet->setIsRequest(false);
-        send(packet, "udpOut");
+        socket.sendTo(packet, srcAddr, srcPort);
+
+        numSent++;
     }
     else
     {
         simtime_t rtt = simTime() - packet->getCreationTime();
-        EV << "RTT: " << rtt << "\n";
+        ev << "RTT: " << rtt << "\n";
+        this->cOutRTT->record(rtt);
         delete msg;
     }
     numReceived++;
 }
 
 void UDPPingApp::receiveSignal(cComponent *src, simsignal_t id, long value) {
-    if (id == this->packet_sent_signal) {
-        EV << "[" << this->getFullPath() << "] packet sent signal received from " << src->getFullPath() << ". Sequence Number : " << value << endl;
+
+    ev << "signal arrived from " << src << endl;
+
+    if (id == packet_sent_signal) {
+        ev << "[" << this->getFullPath() << "] packet sent signal received from " << src->getFullPath() << ". Sequence Number : " << value << endl;
         this->prv.insert(std::make_pair(value,simTime()));
+
     }
 }
 
 void UDPPingApp::sendPacket() {
-    UDPBasicApp::sendPacket();
+
+    cPacket* pkt = this->createPacket();
+
+    IPvXAddress destAddr = chooseDestAddr();
+
+    ev << "Sending Packet " << pkt << endl;
+
+    emit(packet_sent_signal,counter);
+
+    //emit(sentPkSignal, pkt);
+
+    this->socket.sendTo(pkt, destAddr, destPort);
+    numSent++;
+
 }
 

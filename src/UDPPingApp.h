@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2005 Andras Babos
+// Copyright (C) 2014 Juan Carlos Maureira
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
@@ -14,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
-
 
 #ifndef __INET_UDPPINGAPP_H
 #define __INET_UDPPINGAPP_H
@@ -36,10 +36,13 @@ class UDPPingApp : public UDPBasicApp, public cIListener
 {
   private:
     cOutVector*             cOutCounter;
+    cOutVector*             cOutRTT;
     long int                bytes_sent;
     long int                bytes_received;
+    long int                counter;
 
-    simsignal_t             packet_sent_signal;
+    static simsignal_t      packet_sent_signal;
+
     PacketRegisterVector    prv;
 
     cModule*                destination_module;
@@ -53,6 +56,7 @@ class UDPPingApp : public UDPBasicApp, public cIListener
     virtual void sendPacket();
 
   protected:
+    virtual int numInitStages() const { return 5; }
     virtual void initialize(int stage);
     virtual void finish();
 
@@ -65,6 +69,7 @@ class UDPPingApp : public UDPBasicApp, public cIListener
     virtual void receiveSignal(cComponent *src, simsignal_t id, double value) { error("receiveSingal: double not supported"); }
     virtual void receiveSignal(cComponent *src, simsignal_t id, const SimTime& st) { error("receiveSingal: simtime_t not supported"); }
     virtual void receiveSignal(cComponent *src, simsignal_t id, const char* value) { error("receiveSingal: const char* not supported"); }
+    virtual void receiveSignal(cComponent *src, simsignal_t id, bool value) { error("receiveSingal: bool not supported"); }
 };
 
 #endif

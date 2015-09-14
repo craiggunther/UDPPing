@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for libUDPPing
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep --make-so -O out -I../../inet-stable/src/networklayer/ldp -I../../inet-stable/src/networklayer/ipv6 -I../../inet-stable/src/applications/udpapp -I../../inet-stable/src/base -I../../inet-stable/src/linklayer/mfcore -I../../inet-stable/src/transport/udp -I../../inet-stable/src/linklayer/contract -I../../inet-stable/src/transport/contract -I../../inet-stable/src/networklayer/mpls -I../../inet-stable/src/transport/sctp -I../../inet-stable/src/applications/pingapp -I../../inet-stable/src/util/headerserializers -I../../inet-stable/src/networklayer/ipv4 -I../../inet-stable/src/networklayer/common -I../../inet-stable/src/networklayer/ted -I../../inet-stable/src/world -I../../inet-stable/src/networklayer/icmpv6 -I../../inet-stable/src/transport/tcp -I../../inet-stable/src/networklayer/contract -I../../inet-stable/src/networklayer/rsvp_te -I../../inet-stable/src/networklayer/arp -I../../inet-stable/src/util -L../../inet-stable/out/$(CONFIGNAME)/src -linet-stable -KINET_STABLE_PROJ=../../inet-stable
+#  opp_makemake -f --deep --make-so -O out -I/opt/intel/composer_xe_2013_sp1.0.080/mkl/include -I/opt/intel/composer_xe_2013_sp1.0.080/tbb/include -I../../inet/src/transport/tcp_common -I../../inet/src/base -I../../inet/src/util -I../../inet/src/applications/common -I../../inet/src/linklayer/ieee80211/mac -I../../inet/src/applications/udpapp -I../../inet/src/transport/udp -I../../inet/src/linklayer/ieee80211/radio/errormodel -I../../inet/src/util/headerserializers -I../../inet/src/linklayer/ieee80211/radio -I../../inet/src/status -I../../inet/src/transport/sctp -I../../inet/src/networklayer/icmpv6 -I../../inet/src/linklayer/radio/propagation -I../../inet/src/transport/contract -I../../inet/src/networklayer/ipv6tunneling -I../../inet/src/world/radio -I../../inet/src/linklayer/contract -I../../inet/src/util/headerserializers/udp -I../../inet/src/util/headerserializers/tcp -I../../inet/src/linklayer/radio -I../../inet/src/world/obstacles -I../../inet/src/networklayer/common -I../../inet/src/networklayer/ipv6 -I../../inet/src/networklayer/arp -I../../inet/src/networklayer/routing/aodv -I../../inet/src/networklayer/contract -I../../inet/src -I../../inet/src/networklayer/xmipv6 -I../../inet/src/util/headerserializers/sctp -I../../inet/src/util/headerserializers/ipv6 -I../../inet/src/battery/models -I../../inet/src/networklayer/autorouting/ipv4 -I../../inet/src/networklayer/ipv4 -I../../inet/src/mobility/contract -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/common -I../../inet/src/util/headerserializers/ipv4 -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/../compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4 -L../../inet/out/$$\(CONFIGNAME\)/src -linet -DINET_IMPORT -KINET_PROJ=../../inet
 #
 
 # Name of target to be created (-o option)
@@ -10,36 +10,54 @@ TARGET = libUDPPing$(SHARED_LIB_SUFFIX)
 
 # C++ include paths (with -I)
 INCLUDE_PATH = \
-    -I../../inet-stable/src/networklayer/ldp \
-    -I../../inet-stable/src/networklayer/ipv6 \
-    -I../../inet-stable/src/applications/udpapp \
-    -I../../inet-stable/src/base \
-    -I../../inet-stable/src/linklayer/mfcore \
-    -I../../inet-stable/src/transport/udp \
-    -I../../inet-stable/src/linklayer/contract \
-    -I../../inet-stable/src/transport/contract \
-    -I../../inet-stable/src/networklayer/mpls \
-    -I../../inet-stable/src/transport/sctp \
-    -I../../inet-stable/src/applications/pingapp \
-    -I../../inet-stable/src/util/headerserializers \
-    -I../../inet-stable/src/networklayer/ipv4 \
-    -I../../inet-stable/src/networklayer/common \
-    -I../../inet-stable/src/networklayer/ted \
-    -I../../inet-stable/src/world \
-    -I../../inet-stable/src/networklayer/icmpv6 \
-    -I../../inet-stable/src/transport/tcp \
-    -I../../inet-stable/src/networklayer/contract \
-    -I../../inet-stable/src/networklayer/rsvp_te \
-    -I../../inet-stable/src/networklayer/arp \
-    -I../../inet-stable/src/util \
+    -I/opt/intel/composer_xe_2013_sp1.0.080/mkl/include \
+    -I/opt/intel/composer_xe_2013_sp1.0.080/tbb/include \
+    -I../../inet/src/transport/tcp_common \
+    -I../../inet/src/base \
+    -I../../inet/src/util \
+    -I../../inet/src/applications/common \
+    -I../../inet/src/linklayer/ieee80211/mac \
+    -I../../inet/src/applications/udpapp \
+    -I../../inet/src/transport/udp \
+    -I../../inet/src/linklayer/ieee80211/radio/errormodel \
+    -I../../inet/src/util/headerserializers \
+    -I../../inet/src/linklayer/ieee80211/radio \
+    -I../../inet/src/status \
+    -I../../inet/src/transport/sctp \
+    -I../../inet/src/networklayer/icmpv6 \
+    -I../../inet/src/linklayer/radio/propagation \
+    -I../../inet/src/transport/contract \
+    -I../../inet/src/networklayer/ipv6tunneling \
+    -I../../inet/src/world/radio \
+    -I../../inet/src/linklayer/contract \
+    -I../../inet/src/util/headerserializers/udp \
+    -I../../inet/src/util/headerserializers/tcp \
+    -I../../inet/src/linklayer/radio \
+    -I../../inet/src/world/obstacles \
+    -I../../inet/src/networklayer/common \
+    -I../../inet/src/networklayer/ipv6 \
+    -I../../inet/src/networklayer/arp \
+    -I../../inet/src/networklayer/routing/aodv \
+    -I../../inet/src/networklayer/contract \
+    -I../../inet/src \
+    -I../../inet/src/networklayer/xmipv6 \
+    -I../../inet/src/util/headerserializers/sctp \
+    -I../../inet/src/util/headerserializers/ipv6 \
+    -I../../inet/src/battery/models \
+    -I../../inet/src/networklayer/autorouting/ipv4 \
+    -I../../inet/src/networklayer/ipv4 \
+    -I../../inet/src/mobility/contract \
+    -I../../inet/src/applications/pingapp \
+    -I../../inet/src/linklayer/common \
+    -I../../inet/src/util/headerserializers/ipv4 \
     -I.
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = -L../../inet-stable/out/$(CONFIGNAME)/src  -linet-stable
-LIBS += -Wl,-rpath,`abspath ../../inet-stable/out/$(CONFIGNAME)/src`
+LIBS = -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64 -L/opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4 -L../../inet/out/$(CONFIGNAME)/src  -linet
+LIBS += -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/ipp/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/mkl/lib/intel64` -Wl,-rpath,`abspath /opt/intel/composer_xe_2013_sp1.0.080/tbb/lib/intel64/gcc4.4` -Wl,-rpath,`abspath ../../inet/out/$(CONFIGNAME)/src`
 
 # Output directory
 PROJECT_OUTPUT_DIR = ../out
@@ -54,7 +72,7 @@ MSGFILES = \
     UDPPingMsg.msg
 
 # Other makefile variables (-K)
-INET_STABLE_PROJ=../../inet-stable
+INET_PROJ=../../inet
 
 #------------------------------------------------------------------------------
 
@@ -80,7 +98,7 @@ include $(CONFIGFILE)
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
 
-COPTS = $(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS = $(CFLAGS) -DINET_IMPORT $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)
 
 # we want to recompile everything if COPTS changes,
@@ -101,12 +119,13 @@ endif
 
 # Main target
 all: $O/$(TARGET)
-	$(LN) $O/$(TARGET) .
+	$(Q)$(LN) $O/$(TARGET) .
 
 $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
 	@$(MKPATH) $O
-	$(SHLIB_LD) -o $O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
-	$(SHLIB_POSTPROCESS) $O/$(TARGET)
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) -o $O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
+	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
 
 .PHONY: all clean cleanall depend msgheaders
 
@@ -114,43 +133,57 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
 
 $O/%.o: %.cc $(COPTS_FILE)
 	@$(MKPATH) $(dir $@)
-	$(CXX) -c $(COPTS) -o $@ $<
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 %_m.cc %_m.h: %.msg
-	$(MSGC) -s _m.cc $(MSGCOPTS) $?
+	$(qecho) MSGC: $<
+	$(Q)$(MSGC) -s _m.cc $(MSGCOPTS) $?
 
 msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
-	-rm -rf $O
-	-rm -f UDPPing UDPPing.exe libUDPPing.so libUDPPing.a libUDPPing.dll libUDPPing.dylib
-	-rm -f ./*_m.cc ./*_m.h
+	$(qecho) Cleaning...
+	$(Q)-rm -rf $O
+	$(Q)-rm -f UDPPing UDPPing.exe libUDPPing.so libUDPPing.a libUDPPing.dll libUDPPing.dylib
+	$(Q)-rm -f ./*_m.cc ./*_m.h
 
 cleanall: clean
-	-rm -rf $(PROJECT_OUTPUT_DIR)
+	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/UDPPingApp.o: UDPPingApp.cc \
 	UDPPingApp.h \
 	UDPPingMsg_m.h \
-	$(INET_STABLE_PROJ)/src/applications/udpapp/UDPAppBase.h \
-	$(INET_STABLE_PROJ)/src/applications/udpapp/UDPBasicApp.h \
-	$(INET_STABLE_PROJ)/src/base/INETDefs.h \
-	$(INET_STABLE_PROJ)/src/base/NotifierConsts.h \
-	$(INET_STABLE_PROJ)/src/linklayer/contract/MACAddress.h \
-	$(INET_STABLE_PROJ)/src/networklayer/common/IInterfaceTable.h \
-	$(INET_STABLE_PROJ)/src/networklayer/common/InterfaceEntry.h \
-	$(INET_STABLE_PROJ)/src/networklayer/common/InterfaceToken.h \
-	$(INET_STABLE_PROJ)/src/networklayer/contract/IPAddress.h \
-	$(INET_STABLE_PROJ)/src/networklayer/contract/IPAddressResolver.h \
-	$(INET_STABLE_PROJ)/src/networklayer/contract/IPv6Address.h \
-	$(INET_STABLE_PROJ)/src/networklayer/contract/IPvXAddress.h \
-	$(INET_STABLE_PROJ)/src/networklayer/ipv4/IPv4InterfaceData.h \
-	$(INET_STABLE_PROJ)/src/transport/contract/UDPControlInfo_m.h
+	$(INET_PROJ)/src/applications/common/ApplicationBase.h \
+	$(INET_PROJ)/src/applications/udpapp/UDPBasicApp.h \
+	$(INET_PROJ)/src/base/Compat.h \
+	$(INET_PROJ)/src/base/ILifecycle.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/base/INotifiable.h \
+	$(INET_PROJ)/src/base/LifecycleOperation.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/base/NodeOperations.h \
+	$(INET_PROJ)/src/base/NotificationBoard.h \
+	$(INET_PROJ)/src/base/NotifierConsts.h \
+	$(INET_PROJ)/src/base/OperationalBase.h \
+	$(INET_PROJ)/src/linklayer/contract/MACAddress.h \
+	$(INET_PROJ)/src/networklayer/common/IInterfaceTable.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceEntry.h \
+	$(INET_PROJ)/src/networklayer/common/InterfaceToken.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv4Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/ipv4/IPv4InterfaceData.h \
+	$(INET_PROJ)/src/transport/contract/UDPControlInfo_m.h \
+	$(INET_PROJ)/src/transport/contract/UDPSocket.h
 $O/UDPPingMsg_m.o: UDPPingMsg_m.cc \
 	UDPPingMsg_m.h \
-	$(INET_STABLE_PROJ)/src/base/INETDefs.h
+	$(INET_PROJ)/src/base/Compat.h \
+	$(INET_PROJ)/src/base/INETDefs.h
 
